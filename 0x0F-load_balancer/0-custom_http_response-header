@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
-# Configures a new Ubuntu server with a custom HTTP header response
-apt-get -y update
-apt-get -y install nginx
-ufw allow 'Nginx HTTP'
-echo 'Holberton School' > /var/www/html/index.nginx-debian.html
-sed -i '/listen 80 default_server;/a rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-sed -i '/listen 80 default_server;/a add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
-service nginx start
+# script to configure your Nginx server
+# to have a custom HTTP header
+# | is used in place of / for the sed commands
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
+echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html
+new_conf="server_name _;\n\trewrite ^/redirect_me https://www.google.com permanent;"
+sudo sed -i "s|server_name _;|${new_conf}|g" /etc/nginx/sites-available/default
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+new_conf2="\terror_page 404 /404.html;\n\}"
+sudo sed -i "s|^\}$|${new_conf2}|g" /etc/nginx/sites-available/default
+new_conf3="add_header X-Served-By \"${HOSTNAME}\";"
+sudo sed -i "/^\tlocation \/ {/a \ \t\t${new_conf3}" /etc/nginx/sites-available/default
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+sudo service nginx restart
