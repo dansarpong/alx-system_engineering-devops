@@ -11,11 +11,9 @@ echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
 new_conf="\
 frontend http_front
     bind *:80
-    mode http
     default_backend http_back
     
 backend http_back
-    mode http
     balance roundrobin
     server web-01 18.234.107.21:80 check
     server web-02 18.210.17.1:80 check"
