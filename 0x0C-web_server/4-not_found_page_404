@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# script to configure your Nginx server
+# so that /redirect_me is redirecting to another page
+# and have a custom 404 page that contains a string
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
+echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html
+new_conf="server_name _;\nrewrite ^/redirect_me https://www.google.com/ permanent;"
+sudo sed -i s/"server_name _;"/"${new_conf}"/g /etc/nginx/sites-available/default
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+new_conf2="error_page 404 /404.html;\n\}"
+sudo sed -i s/"^\}$"/"${new_conf2}"/g /etc/nginx/sites-available/default
+sudo ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+sudo service nginx restart
