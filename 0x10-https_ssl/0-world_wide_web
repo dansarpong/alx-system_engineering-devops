@@ -1,27 +1,24 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2086
-# a script that displays information about subdomains
+# script that will display information about subdomains
 
-
-info_sub () {
+info_sub() {
     domain="$1"
     subdomain="$2"
 
-    if [ -z "$subdomain" ]; then
+    if [ -z "$subdomain" ]
+    then
         subdomains=("www" "lb-01" "web-01" "web-02")
     else
         subdomains=("$subdomain")
     fi
 
-    for sub in "${subdomains[@]}"; do
-        info=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ {getline; print}')
-        record_type=$(echo "$info" | awk '{print $4}')
-        destination=$(echo "$info" | awk '{print $5}')
-        echo "The subdomain $sub is a $record_type record and points to $destination"
+    for sub in "${subdomains[@]}"
+    do
+        answer=$(dig "$sub.$domain" | awk '/ANSWER SECTION/ {getline; print}')
+        record=$(echo "$answer" | awk '{print $4}')
+        dest=$(echo "$answer" | awk '{print $5}')
+        echo "The subdomain $sub is a $record record and points to $dest"
     done
 }
 
-domain="$1"
-subdomain="$2"
-
-info_sub "$domain" "$subdomain"
+info_sub "$1" "$2"
